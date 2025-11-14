@@ -1,0 +1,46 @@
+{{- if .Values.clusterType.deployment }}
+  {{- if .Values.harbor.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.argocd.clusterName }}-harbor
+  namespace: {{ .Values.argocd.namespace }}
+spec:
+  project: {{ .Values.argocd.project }}
+  source:
+    repoURL: {{ .Values.harbor.chartRepo }}
+    chart: {{ .Values.harbor.chart }}
+    targetRevision: {{ .Values.harbor.version }}
+    helm:
+      values: |
+        updateStrategy:
+          type: {{ .Values.harbor.updateStrategy | default "Recreate" }}
+        externalURL: https://{{ .Values.harbor.externalURL | default (printf "harbor.%s" ( .Values.dnsSuffix )) }}
+        harborAdminPassword: {{ .Values.adminPassword }}
+        expose:
+          type: ingress
+          tls:
+            enabled: true
+            certSource: secret
+            secret:
+              secretName: aproject-harbor-tls
+          ingress:
+            annotations:
+              cert-manager.io/cluster-issuer: {{ .Values.harbor.certManagerIssuer }}
+            className: nginx
+            hosts:
+              core: {{ .Values.harbor.externalURL | default (printf "harbor.%s" ( .Values.dnsSuffix )) }}
+        persistence:
+          persistentVolumeClaim:
+            registry:
+              size: {{ .Values.harbor.registrySize | default "5Gi"}}
+  destination:
+    server: {{ .Values.argocd.cluster }}
+    namespace: {{ .Values.harbor.namespace }}
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  {{- end }}
+{{- end }}

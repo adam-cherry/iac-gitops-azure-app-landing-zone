@@ -1,0 +1,3 @@
+# Update Postgres Delegation in IOP-hub 
+
+az network vnet subnet update --name tsp1-acc-gwc-iop-hub-snet  --resource-group tsp1-acc-gwc-network-rg  --vnet-name tsp1-acc-gwc--vnet-01 --delegations "Microsoft.DBforPostgreSQL/flexibleServers"

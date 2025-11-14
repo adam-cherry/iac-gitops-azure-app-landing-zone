@@ -1,0 +1,4 @@
+dependencies:
+- name: gitea
+  repository: https://dl.gitea.io/charts
+  version: 10.2.0

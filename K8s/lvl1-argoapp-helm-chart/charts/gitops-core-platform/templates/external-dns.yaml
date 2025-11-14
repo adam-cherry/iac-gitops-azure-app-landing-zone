@@ -1,0 +1,65 @@
+{{- if .Values.externalDns.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.argocd.clusterName }}-external-dns
+  namespace: {{ .Values.argocd.namespace }}
+spec:
+  project: {{ .Values.argocd.project }}
+  source:
+    repoURL: {{ .Values.externalDns.chartRepo }}
+    chart: {{ .Values.externalDns.chart }}
+    targetRevision: {{ .Values.externalDns.version }}
+    helm:
+      values: |
+        {{- if eq .Values.provider "stackit"}}
+        provider:
+          name: webhook
+          webhook:
+            image:
+              repository: ghcr.io/stackitcloud/external-dns-stackit-webhook
+              tag: v0.3.0
+            env:
+            - name: PROJECT_ID
+              value: {{ .Values.externalDns.stackit.project_id }}
+            - name: DOMAIN_FILTER
+              value: {{ .Values.externalDns.stackit.domain_filter }}
+            - name: AUTH_TOKEN
+              value: {{ .Values.externalDns.stackit.auth_token }}
+            securityContext:
+              capabilities:
+                drop:
+                - ALL
+              readOnlyRootFilesystem: true
+              runAsNonRoot: true
+              runAsUser: 65534
+            livenessProbe:
+              failureThreshold: 2
+              httpGet:
+                path: /healthz
+                port: http-webhook
+              initialDelaySeconds: 10
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 5
+            readinessProbe:
+              failureThreshold: 6
+              httpGet:
+                path: /healthz
+                port: http-webhook
+              initialDelaySeconds: 5
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 5
+        {{- end }}
+  destination:
+    server: {{ .Values.argocd.cluster }}
+    namespace: {{ .Values.externalDns.namespace }}
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+{{- end }}
+
+

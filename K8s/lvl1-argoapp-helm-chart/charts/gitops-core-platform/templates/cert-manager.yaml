@@ -1,0 +1,30 @@
+{{- if .Values.certManager.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.argocd.clusterName }}-cert-manager
+  namespace: {{ .Values.argocd.namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-5"
+spec:
+  project: {{ .Values.argocd.project }}
+  source:
+    repoURL: {{ .Values.certManager.chartRepo }}
+    chart: {{ .Values.certManager.chart }}
+    targetRevision: {{ .Values.certManager.version }}
+    helm:
+      values: |
+        installCRDs: true
+        webhook:
+          validatingWebhookConfigurationAnnotations:
+            "admissions.enforcer/disabled": "true"
+  destination:
+    server: {{ .Values.argocd.cluster }}
+    namespace: {{ .Values.certManager.namespace }}
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+{{- end }}
+

@@ -1,0 +1,18 @@
+{
+    "extend_es_landing_zones": {
+      "policy_assignments": ["Deploy-VM-Backup"],
+      "policy_definitions": [],
+      "policy_set_definitions": [],
+      "role_definitions": [],
+      "archetype_config": {
+        "parameters": {
+                "Deploy-VM-Backup": {
+                    "exclusionTagName": "company",
+                    "exclusionTagValue": ["paradys"]
+                }
+            },
+        "access_control": {
+        }
+      }
+    }
+  }

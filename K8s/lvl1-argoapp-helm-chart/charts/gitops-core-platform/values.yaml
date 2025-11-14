@@ -1,0 +1,98 @@
+provider: ""
+dnsSuffix: "cloudspielwiese.online"
+adminPassword : ""
+gitopsRepo: ""
+internalLbs: true
+
+clusterType:
+  workload: true
+  deployment: false
+  observability: false
+
+argocd:
+  project: platform
+  namespace: argocd
+  clusterName: deployment
+  cluster: "https://kubernetes.default.svc"
+
+gitea:
+  enabled: true
+  chartRepo: https://dl.gitea.io/charts
+  chart: gitea
+  version: 10.3.0
+  namespace: gitea
+  values: ""
+  certManagerIssuer: "letsencrypt-acme-http-staging"
+
+harbor:
+  enabled: true
+  chartRepo: https://helm.goharbor.io
+  chart: harbor
+  version: 1.15.0
+  namespace: harbor
+  updateStrategy: Recreate
+  registrySize: 5Gi
+  values: ""
+  certManagerIssuer: "letsencrypt-acme-http-staging"
+
+certManager:
+  enabled: true
+  chartRepo: https://charts.jetstack.io
+  chart: cert-manager
+  version: 1.15.1 
+  namespace: cert-manager
+
+externalDns:
+  enabled: true
+  chartRepo: https://kubernetes-sigs.github.io/external-dns/
+  chart: external-dns
+  version: 1.14.5
+  namespace: external-dns
+  stackit:
+    project_id: ""
+    domain_filter: ""
+    auth_token: ""
+
+externalSecrets:
+  enabled: true
+  chartRepo: https://charts.external-secrets.io
+  chart: external-secrets
+  version: v0.9.20
+  namespace: external-secrets
+  values: ""
+
+ingressNginx:
+  enabled: true
+  chartRepo: https://kubernetes.github.io/ingress-nginx
+  chart: ingress-nginx
+  version: 4.11.0
+  namespace: ingress-nginx
+  values: ""
+
+kyverno:
+  enabled: true
+  chartRepo: https://kyverno.github.io/kyverno/
+  chart: kyverno
+  version: 3.2.6
+  namespace: kyverno
+  values: ""
+  policies:
+    chart: kyverno-policies
+    version: 3.2.5
+    podSecurityStandard: baseline
+    validationFailureAction: Audit
+
+platformConfig:
+  enabled: true
+  image:
+    repository: ghcr.io/thschue/platformer
+    tag: dev-202407300820
+  config:
+    secretName: platform-config
+
+gitopsPlatformClusterBase:
+  chartRepo: gitopsmgmtgwcacrnnub.azurecr.io/helm
+  chart: gitops-k8s-platform-clusters
+  version: 0.0.3
+  namespace: gitops
+

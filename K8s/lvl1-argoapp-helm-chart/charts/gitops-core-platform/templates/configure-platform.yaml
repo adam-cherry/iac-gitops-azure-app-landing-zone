@@ -1,0 +1,133 @@
+{{- if .Values.clusterType.deployment }}
+  {{- if .Values.platformConfig.enabled }}
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Name }}-configurator-role
+rules:
+  - verbs:
+      - create
+    apiGroups:
+      - "*"
+    resources:
+      - secrets
+
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-configurator
+
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Name }}-configurator-rolebinding
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Release.Name }}-configurator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ .Release.Name }}-configurator-role
+
+---
+kind: Job
+apiVersion: batch/v1
+metadata:
+  name: "{{ .Release.Name }}-configure-{{ .Release.Revision }}"
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: {{ .Release.Name }}-configurator
+      containers:
+        - name: configure
+          image: {{ .Values.platformConfig.image.repository }}:{{ .Values.platformConfig.image.tag }}
+          command:
+            - "/platformer"
+          args:
+            - "run"
+            - "--config"
+            - "/platformer.yaml"
+          env:
+            - name: HARBOR_URL
+              value: https://{{ .Values.harbor.externalURL | default (printf "harbor.%s" ( .Values.dnsSuffix )) }}
+            - name: HARBOR_CREDENTIALS_USERNAME
+              value: admin
+            - name: HARBOR_CREDENTIALS_PASSWORD
+              value: {{ .Values.adminPassword }}
+            - name: GITEA_URL
+              value: https://{{ .Values.gitea.externalURL | default (printf "gitea.%s" ( .Values.dnsSuffix )) }}
+            - name: GITEA_SSHURL
+              value: "ssh://git@{{ .Release.Name }}-gitea-cluster.gitea.svc.cluster.local"
+            - name: GITEA_CREDENTIALS_USERNAME
+              value: "gitea_admin"
+            - name: GITEA_CREDENTIALS_PASSWORD
+              value: {{ .Values.adminPassword }}
+          volumeMounts:
+            - mountPath: /platformer.yaml
+              name: platformer-config
+              subPath: platformer.yaml
+      volumes:
+        - name: platformer-config
+          secret:
+            secretName: {{ .Values.platformConfig.config.secretName }}
+            defaultMode: 0444
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: gitea
+  name: {{ .Release.Name }}-gitea-cluster
+  namespace: gitea
+spec:
+  ports:
+    - name: ssh
+      port: 22
+      protocol: TCP
+      targetPort: 2222
+  selector:
+    app.kubernetes.io/instance: deployment-gitea
+    app.kubernetes.io/name: gitea
+  type: ClusterIP
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: platform-gitops
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+spec:
+  generators:
+    - git:
+        repoURL: ssh://git@{{ .Release.Name }}-gitea-cluster.gitea.svc.cluster.local/platform/gitops
+        revision: HEAD
+        files:
+          - path: "**/appset.yaml"
+  template:
+    metadata:
+      name: gitops-{{ "{{path.basename}}" }}
+    spec:
+      project: platform
+      sources:
+        - repoURL: ssh://git@{{ .Release.Name }}-gitea-cluster.gitea.svc.cluster.local/platform/gitops
+          path: "{{ "{{path.basename}}" }}"
+          targetRevision: HEAD
+      destination:
+        server: "https://kubernetes.default.svc"
+        namespace: "argocd"
+      syncPolicy:
+        automated:
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+  {{- end }}
+{{- end }}

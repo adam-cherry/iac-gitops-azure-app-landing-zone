@@ -1,0 +1,31 @@
+{
+    "bgrtsp": {
+        "policy_assignments": [
+            "Audit-PeDnsZones",
+            "Deny-HybridNetworking",
+            "Deny-Resource-Locations",
+            "Deny-RSG-Locations",
+            "Deploy-Private-DNS-Zones"
+        ],
+        "policy_definitions": [],
+        "policy_set_definitions": [],
+        "role_definitions": [],
+        "archetype_config": {
+            "parameters": {
+                "Deny-Resource-Locations": {
+                    "listOfAllowedLocations": [
+                        "germanywestcentral",
+                        "northeurope"
+                    ]
+                },
+                "Deny-RSG-Locations": {
+                    "listOfAllowedLocations": [
+                        "germanywestcentral",
+                        "northeurope"
+                    ]
+                }
+            },
+            "access_control": {}
+        }
+    }
+}

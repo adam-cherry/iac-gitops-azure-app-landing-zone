@@ -1,0 +1,57 @@
+{{- if .Values.clusterType.deployment }}
+  {{- if .Values.gitea.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.argocd.clusterName }}-gitea
+  namespace: {{ .Values.argocd.namespace }}
+spec:
+  project: {{ .Values.argocd.project }}
+  source:
+    repoURL: {{ .Values.gitea.chartRepo }}
+    chart: {{ .Values.gitea.chart }}
+    targetRevision: {{ .Values.gitea.version }}
+    helm:
+      values: |
+        externalUrl: {{ .Values.gitea.externalURL | default (printf "gitea.%s" ( .Values.dnsSuffix )) }}
+        redis-cluster:
+          enabled: false
+        postgresql:
+          enabled: true
+        postgresql-ha:
+          enabled: false
+        replicaCount: 1
+        strategy:
+          type: Recreate
+        gitea:
+          admin:
+            username: gitea_admin
+            password: {{ .Values.adminPassword }}
+          gitea:
+            config:
+              appName: KTC Deployment Repository
+        ingress:
+          enabled: true
+          className: nginx
+          annotations:
+            cert-manager.io/cluster-issuer: {{ .Values.gitea.certManagerIssuer }}
+          hosts:
+          - host: {{ .Values.gitea.externalURL | default (printf "gitea.%s" ( .Values.dnsSuffix )) }}
+            paths:
+            - path: /
+              pathType: Prefix
+          tls:
+          - hosts:
+            - {{ .Values.gitea.externalURL | default (printf "gitea.%s" ( .Values.dnsSuffix )) }}
+            secretName: aproject-gitea-tls
+
+  destination:
+    server: {{ .Values.argocd.cluster }}
+    namespace: {{ .Values.gitea.namespace }}
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  {{- end }}
+{{- end }}

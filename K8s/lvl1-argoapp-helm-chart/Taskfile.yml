@@ -1,0 +1,8 @@
+version: '3'
+
+tasks:
+  helm-build:
+    cmds:
+    - helm dependency update charts/aproject-k8s-core-platform
+    - helm lint
+    - helm package charts/aproject-k8s-core-platform

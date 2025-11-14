@@ -1,0 +1,6 @@
+provider: ""
+
+certManager:
+  stackit:
+    project_id: ""
+    auth_token: ""

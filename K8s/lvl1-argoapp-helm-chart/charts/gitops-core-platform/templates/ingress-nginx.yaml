@@ -1,0 +1,44 @@
+{{- if .Values.ingressNginx.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.argocd.clusterName }}-ingress-nginx
+  namespace: {{ .Values.argocd.namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-5"
+spec:
+  project: {{ .Values.argocd.project }}
+  source:
+    repoURL: {{ .Values.ingressNginx.chartRepo }}
+    chart: {{ .Values.ingressNginx.chart }}
+    targetRevision: {{ .Values.ingressNginx.version }}
+    helm:
+      values: |
+        controller:
+          ingressClassResource:
+            default: true
+          service:
+            type: LoadBalancer
+            externalTrafficPolicy: Local 
+  ## externalTrafficPolicy: Local is Bugfix
+  ## Deploys internal LB
+  # {{ if .Values.internalLbs }}
+  # {{ if eq .Values.provider "stackit" }}
+  #           annotations:
+  #             lb.stackit.cloud/internal-lb: true
+  # {{- end }}
+  # {{ if eq .Values.provider "azure" }} 
+  #           annotations:
+  #             service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+  # {{- end }}
+  # {{- end }}
+
+  destination:
+    server: {{ .Values.argocd.cluster }}
+    namespace: {{ .Values.ingressNginx.namespace }}
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+{{- end }}

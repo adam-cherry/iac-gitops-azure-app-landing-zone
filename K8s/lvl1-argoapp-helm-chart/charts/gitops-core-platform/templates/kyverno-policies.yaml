@@ -1,0 +1,28 @@
+{{- if .Values.kyverno.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.argocd.clusterName }}-kyverno-policies
+  namespace: {{ .Values.argocd.namespace }}
+spec:
+  project: {{ .Values.argocd.project }}
+  source:
+    repoURL: {{ .Values.kyverno.chartRepo }}
+    chart: {{ .Values.kyverno.policies.chart }}
+    targetRevision: {{ .Values.kyverno.policies.version }}
+    helm:
+      parameters:
+        - name: "podSecurityStandard"
+          value: {{ .Values.kyverno.policies.podSecurityStandard }}
+        - name: "validationFailureAction"
+          value: {{ .Values.kyverno.policies.validationFailureAction }}
+  destination:
+    server: {{ .Values.argocd.cluster }}
+    namespace: {{ .Values.kyverno.namespace }}
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  {{- end }}
+

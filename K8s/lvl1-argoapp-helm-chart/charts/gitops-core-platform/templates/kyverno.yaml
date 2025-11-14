@@ -1,0 +1,25 @@
+{{- if .Values.kyverno.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.argocd.clusterName }}-kyverno
+  namespace: {{ .Values.argocd.namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-5"
+spec:
+  project: {{ .Values.argocd.project }}
+  source:
+    repoURL: {{ .Values.kyverno.chartRepo }}
+    chart: {{ .Values.kyverno.chart }}
+    targetRevision: {{ .Values.kyverno.version }}
+  destination:
+    server: {{ .Values.argocd.cluster }}
+    namespace: {{ .Values.kyverno.namespace }}
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+  {{- end }}
+

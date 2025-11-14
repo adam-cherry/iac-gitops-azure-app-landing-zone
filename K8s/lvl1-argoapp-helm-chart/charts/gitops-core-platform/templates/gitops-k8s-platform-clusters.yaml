@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.argocd.clusterName }}-gitops-k8s-platform-clusters
+  namespace: {{ .Values.argocd.namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+spec:
+  project: {{ .Values.argocd.project }}
+  source:
+    repoURL: {{ .Values.gitopsPlatformClusterBase.chartRepo }}
+    chart: {{ .Values.gitopsPlatformClusterBase.chart }}
+    targetRevision: {{ .Values.gitopsPlatformClusterBase.version }}
+
+  destination:
+    server: {{ .Values.argocd.cluster }}
+    namespace: {{ .Values.gitopsPlatformClusterBase.namespace }}
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
