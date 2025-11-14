@@ -9,6 +9,7 @@ A reference implementation demonstrating GitOps platform automation on Azure usi
 **Key Concepts**: This project implements a cloud-native GitOps pattern where infrastructure and application deployments are version-controlled, declarative, and automatically synchronized via Git repositories.
 
 ## Architecture
+<img width="5727" height="4672" alt="LZ-Gitops-platform Azure Architecture-LZ-GitOps-Platform drawio" src="https://github.com/user-attachments/assets/66048026-15ce-4414-bb65-86525f56cc29" />
 
 This repository demonstrates a **three-tier deployment model**:
 
@@ -25,12 +26,16 @@ Core infrastructure and Kubernetes platform layer:
 - Managed Kubernetes cluster (AKS) provisioning
 - ArgoCD deployment for GitOps workflow
 - Foundational Kubernetes services (cert-manager, ingress, DNS, security policies)
+- 
+<img width="1407" height="1067" alt="image-1" src="https://github.com/user-attachments/assets/2ba531f2-7491-4a32-b0d0-20da153974ca" />
 
 ### Tier 3: Application Workloads
 Business application deployments orchestrated via GitOps:
 - Application-specific Helm charts
 - Workload-specific configuration
 - Continuous deployment via ArgoCD
+- 
+![image-2](https://github.com/user-attachments/assets/7fc484e9-8b55-431f-bc7f-ddcb5e9536a5)
 
 ## Core Technologies
 
@@ -203,4 +208,5 @@ This repository serves as a reference implementation. For development guidance:
 
 **Status**: Archived/Reference Implementation
 **Last Updated**: November 2025
+
 
