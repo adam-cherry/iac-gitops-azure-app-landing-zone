@@ -1,6 +1,6 @@
 # iac-gitops-azure-app-landing-zone
 
-> **⚠️ ARCHIVED**: This repository is no longer actively maintained. For current best practices on Azure Landing Zones and GitOps automation, refer to the official [Azure Landing Zone Accelerator](https://github.com/Azure/landing-zones-accelerator).
+> **⚠️ ARCHIVED**: This repository is no longer actively maintained. For current best practices on Azure Landing Zones and GitOps automation.
 
 ## Overview
 
@@ -203,3 +203,4 @@ This repository serves as a reference implementation. For development guidance:
 
 **Status**: Archived/Reference Implementation
 **Last Updated**: November 2025
+
