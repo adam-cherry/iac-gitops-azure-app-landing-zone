@@ -1,204 +1,205 @@
 # iac-gitops-azure-app-landing-zone
 
-> **⚠️ DEPRECATED**: This repository is no longer actively maintained. For current best practices and updated implementations, please refer to the official [Azure Landing Zone Accelerator](https://github.com/Azure/landing-zones-accelerator) and the conceptual foundation in our blog post below.
+> **⚠️ ARCHIVED**: This repository is no longer actively maintained. For current best practices on Azure Landing Zones and GitOps automation, refer to the official [Azure Landing Zone Accelerator](https://github.com/Azure/landing-zones-accelerator).
 
 ## Overview
 
-GitOps platform automation in Azure using Infrastructure-as-Code (IaC), Kubernetes, and CI/CD automation. This repository demonstrates a comprehensive approach to automating cloud infrastructure deployment using Terraform, ArgoCD, and Helm.
+A reference implementation demonstrating GitOps platform automation on Azure using Infrastructure-as-Code (IaC). This repository showcases a comprehensive approach to infrastructure and Kubernetes deployment automation using Terraform, ArgoCD, and Helm, following the Azure Landing Zone framework.
 
-### Reference Materials
-
-For a detailed understanding of the concepts and architecture behind this automation platform, please read our blog post:
-
-**[GitOps Plattform Automatisierung in Azure](https://evoila.de/blog)** by Adam Kirschstein (March 21, 2025)
-
-This article covers:
-- The fundamentals of GitOps and why it matters
-- Azure Landing Zone principles and architecture
-- End-to-end automation strategies
-- Concrete business benefits and real-world results
+**Key Concepts**: This project implements a cloud-native GitOps pattern where infrastructure and application deployments are version-controlled, declarative, and automatically synchronized via Git repositories.
 
 ## Architecture
 
-This repository implements a **three-level deployment pattern**:
+This repository demonstrates a **three-tier deployment model**:
 
-### Level 0: Prerequisites
-Bootstrap infrastructure required before main deployments:
-- Core Azure resources and subscriptions
-- Terraform backend state storage setup
-- Initial GitOps infrastructure
-- On-premises connectivity setup
+### Tier 0: Foundation & Prerequisites
+Bootstrap and foundational infrastructure:
+- Azure subscription and resource group setup
+- Terraform state backend configuration (remote storage)
+- Network foundation (VNets, subnets, DNS)
+- Basic authentication and identity infrastructure
 
-### Level 1-2: Core Platform
-Main infrastructure and Kubernetes platform:
-- Landing zone platform resources
-- Network gateways (VPN, bastion, etc.)
-- GitOps cluster and ArgoCD setup
-- Kubernetes core platform services via Helm charts
+### Tier 1-2: Core Platform
+Core infrastructure and Kubernetes platform layer:
+- Landing zone platform resources aligned with Azure Cloud Adoption Framework
+- Managed Kubernetes cluster (AKS) provisioning
+- ArgoCD deployment for GitOps workflow
+- Foundational Kubernetes services (cert-manager, ingress, DNS, security policies)
 
-### Level 3: Applications
-Workload deployments and business applications
+### Tier 3: Application Workloads
+Business application deployments orchestrated via GitOps:
+- Application-specific Helm charts
+- Workload-specific configuration
+- Continuous deployment via ArgoCD
 
-## Key Technologies
+## Core Technologies
 
-- **Terraform**: Infrastructure-as-Code for Azure resource provisioning
-- **ArgoCD**: GitOps continuous deployment controller for Kubernetes
-- **Helm**: Kubernetes package management and templating
-- **Azure Landing Zone**: Cloud Adoption Framework-based infrastructure blueprint
-- **Kubernetes Platform Services**:
-  - ArgoCD: Declarative GitOps deployments
-  - Cert-Manager: Automated TLS certificate management
-  - External-DNS: Automatic DNS record creation
-  - Ingress-Nginx: Kubernetes ingress controller
-  - Kyverno: Policy enforcement for security and compliance
-  - Harbor: Container image registry with scanning
-  - Gitea: Internal Git repository backend
+| Technology | Purpose |
+|-----------|---------|
+| **Terraform** | Infrastructure-as-Code for Azure resource provisioning and management |
+| **ArgoCD** | GitOps controller for continuous Kubernetes deployment and reconciliation |
+| **Helm** | Kubernetes package management and templating framework |
+| **Azure Landing Zone** | Cloud Adoption Framework-based reference architecture for Azure |
+| **Kyverno** | Kubernetes policy engine for compliance and security enforcement |
+| **cert-manager** | Automated TLS certificate provisioning and management |
+| **External-DNS** | Automatic DNS record management for Kubernetes services |
+| **Ingress-Nginx** | Kubernetes ingress controller for HTTP/HTTPS routing |
 
 ## Repository Structure
 
 ```
+iac-gitops-azure-app-landing-zone/
 ├── Azure/
 │   └── terraform/
-│       ├── modules/              # Reusable Terraform modules
-│       │   ├── base/            # Low-level Azure resources
-│       │   ├── core/            # High-level composition modules
-│       │   └── rootblock/       # Framework modules
-│       └── deployments/         # Deployment configurations
-│           ├── aproject-lz-foundation/
-│           ├── aproject-lz-bootstrap/
-│           └── aproject-gitops/
+│       ├── modules/                 # Reusable Terraform modules
+│       │   ├── base/               # Low-level Azure resources
+│       │   ├── core/               # High-level composed modules
+│       │   └── rootblock/          # Framework and organizational modules
+│       ├── deployments/            # Specific deployment configurations
+│       │   └── <deployment-name>/  # Individual deployment instances
+│       └── prerequisite/           # Bootstrap infrastructure
 ├── K8s/
-│   └── lvl1-argoapp-helm-chart/  # Main Helm charts
-│       └── charts/
-│           ├── gitops-core-platform/
-│           └── gitops-k8s-platform-clusters/
-└── CICD/
-    └── platformer-main/          # Go-based provisioning tool
+│   ├── lvl1-argoapp-helm-chart/    # GitOps platform Helm charts
+│   │   ├── charts/
+│   │   │   ├── gitops-core-platform/        # Core platform services
+│   │   │   └── gitops-k8s-platform-clusters/ # Multi-cluster configuration
+│   │   ├── automation/             # Automation tooling
+│   │   └── Taskfile.yml            # Build and deployment tasks
+│   └── lvl3-hello-helm/            # Example application Helm chart
+├── CLAUDE.md                       # Development guidance for AI assistants
+└── docs/                           # Architecture diagrams and documentation
 ```
 
-## Getting Started
+## Quick Start
 
 ### Prerequisites
 
-- Azure CLI for Azure authentication
-- Terraform ~3.106 for Azure provider
-- kubectl for Kubernetes cluster access
-- Helm for Kubernetes package management
-- Go 1.22+ (for platformer tool)
-- Task runner (optional but recommended)
+- **Azure CLI** - For Azure authentication and resource management
+- **Terraform** ~3.106 - Infrastructure-as-Code tool
+- **kubectl** - Kubernetes command-line interface
+- **Helm** 3.x+ - Kubernetes package manager
+- **Task** - Build automation tool (optional but recommended)
 
-### Terraform Deployment
+### Deploying Infrastructure
 
 ```bash
 # Navigate to deployment directory
-cd Azure/terraform/deployments/aproject-gitops
+cd Azure/terraform/deployments/<deployment-name>
 
 # Initialize Terraform with backend configuration
-terraform init -backend-config="subscription_id=<value>" \
-               -backend-config="resource_group_name=<value>" \
-               -backend-config="storage_account_name=<value>"
+terraform init \
+  -backend-config="subscription_id=<your-subscription-id>" \
+  -backend-config="resource_group_name=<your-rg-name>" \
+  -backend-config="storage_account_name=<your-storage-account>"
 
 # Validate configuration
 terraform validate
 
-# Plan changes
+# Plan infrastructure changes
 terraform plan -out=tfplan
 
 # Apply changes
 terraform apply tfplan
 ```
 
-### Kubernetes Platform Deployment
+### Deploying Kubernetes Platform
 
 ```bash
 cd K8s/lvl1-argoapp-helm-chart
 
-# Update Helm dependencies
+# Update Helm chart dependencies
 helm dependency update
 
-# Lint charts
+# Validate Helm charts
 helm lint charts/gitops-core-platform
 
-# Package charts
+# Build/package Helm charts
 helm package charts/gitops-core-platform
 ```
 
-### CI/CD Platform (Platformer)
+## Key Concepts
 
-```bash
-cd CICD/platformer-main
+### GitOps Workflow
 
-# Build the tool
-go build -o platformer ./cmd/...
+This implementation follows GitOps principles:
 
-# Run provisioning
-go run ./cmd/... [command]
-```
+1. **Single Source of Truth**: All infrastructure and application state is defined in Git
+2. **Declarative Configuration**: Desired state is declared, not imperative commands
+3. **Continuous Reconciliation**: ArgoCD monitors Git and automatically applies changes
+4. **Immutable History**: Git provides complete audit trail of all changes
 
-## Important Configuration
+### Remote State Management
 
-### Terraform Backend
-- **State Storage**: Azure Storage Account (`agitopsbackendsa`)
-- **Location**: `Azure/terraform/deployments/aproject-gitops/terraform.tf`
-- **Note**: Configure backend values via environment variables or `-backend-config` flags, not in code
+Terraform state is stored remotely in Azure Storage Account to support:
+- Team collaboration without local state files
+- Locking to prevent concurrent modifications
+- State encryption at rest
+- Centralized state backup
 
-### Kubernetes Values
-- **Path**: `K8s/lvl1-argoapp-helm-chart/charts/gitops-core-platform/values.yaml`
-- **Scope**: Configures all core platform services (ingress, TLS, DNS, registry settings)
+### Module-Based Architecture
 
-### CI/CD Configuration
-- **Path**: `CICD/platformer-main/config.yaml`
-- **Manages**: Gitea and Harbor provisioning, repository structures, container registry replication
+Terraform modules provide:
+- **Base Modules**: Low-level Azure resources (networks, storage, compute)
+- **Core Modules**: Composed modules combining base resources into coherent platform components
+- **Reusability**: Consistent, version-controlled infrastructure patterns
 
-## Security Best Practices
+## Security Considerations
 
-This repository follows security best practices including:
+This reference implementation incorporates security best practices:
 
-- **Remote State Management**: Terraform state stored in Azure Storage Account, not locally
 - **Secret Management**:
-  - Credentials managed via environment variables
-  - SOPS encryption for GitOps workflow
-  - Azure Key Vault integration for secret storage
+  - Sensitive values managed via environment variables (not committed to Git)
+  - Support for external secret stores (Azure Key Vault, SOPS encryption)
+  - Backend state stored securely in encrypted cloud storage
+
 - **Access Control**:
-  - Role-based access control (RBAC) via Azure and Kubernetes
+  - Role-based access control (RBAC) for Azure resources
   - Service principals for automated authentication
-- **Policy Enforcement**: Kyverno policies ensure:
-  - No untagged images (`latest` tags prohibited)
-  - Namespace isolation
-  - Resource limits and health probes
+  - Kubernetes RBAC and network policies
+
+- **Policy Enforcement**:
+  - Kyverno policies enforce cluster-wide security rules
+  - Container image scanning and vulnerability detection
+  - Namespace isolation and resource quota enforcement
+
 - **Audit & Compliance**:
-  - Complete Git history for all infrastructure changes
-  - Azure Monitor and Log Analytics for logging
-  - Immutable audit trails
+  - Immutable Git history for all infrastructure changes
+  - Azure Monitor and diagnostic logging
+  - Complete audit trails for compliance requirements
 
 ## Multi-Cluster Support
 
-The platform supports multi-cluster Kubernetes deployments:
-- Centralized ArgoCD for multi-cluster management
-- Shared services deployed once, reused across clusters
-- Kyverno policies enforced globally
-- Consistent platform experience across all clusters
+The platform architecture supports managing multiple Kubernetes clusters:
 
-## Limitations and Known Issues
+- Centralized GitOps control via single ArgoCD instance
+- Shared services deployed consistently across clusters
+- Cluster-agnostic Helm charts with environment-specific values
+- Unified policy enforcement via Kyverno
 
-- Repository is deprecated and no longer actively maintained
-- Some configuration references legacy lab environment (`lab.on-clouds.at`)
-- Update these references for production deployments
+## Known Limitations
 
-## Contributing
+- Repository demonstrates reference patterns and may require customization for production use
+- Some example configurations use placeholder values and domain names
+- Infrastructure examples are region-specific (update as needed for your environment)
 
-This repository is archived. For contributions to modern Azure landing zone implementations, please see the official Microsoft resources.
+## Contributing & Development
 
-## Support & Further Reading
+This repository serves as a reference implementation. For development guidance:
 
-For the conceptual foundation and best practices, refer to:
-- The accompanying blog post: **GitOps Plattform Automatisierung in Azure**
-- [Microsoft Cloud Adoption Framework](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/)
+- See `CLAUDE.md` for AI assistant development context
+- Review Terraform module structure in `Azure/terraform/modules/`
+- Helm chart organization in `K8s/lvl1-argoapp-helm-chart/charts/`
+
+## References & Further Reading
+
+- [Azure Cloud Adoption Framework](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/)
 - [Azure Landing Zone Accelerator](https://github.com/Azure/landing-zones-accelerator)
 - [ArgoCD Documentation](https://argo-cd.readthedocs.io/)
 - [Terraform Azure Provider](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs)
+- [Helm Documentation](https://helm.sh/docs/)
+- [Kyverno Policy Examples](https://kyverno.io/docs/writing-policies/)
 
 ---
 
+**Status**: Archived/Reference Implementation
 **Last Updated**: November 2025
-**Status**: Archived/Deprecated
