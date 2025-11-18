@@ -9,7 +9,8 @@ A reference implementation demonstrating GitOps platform automation on Azure usi
 **Key Concepts**: This project implements a cloud-native GitOps pattern where infrastructure and application deployments are version-controlled, declarative, and automatically synchronized via Git repositories.
 
 ## Architecture
-<img width="5727" height="4672" alt="LZ-Gitops-platform Azure Architecture-LZ-GitOps-Platform drawio" src="https://github.com/user-attachments/assets/66048026-15ce-4414-bb65-86525f56cc29" />
+<img width="5727" height="4672" alt="LZ-Gitops-platform Azure Architecture-LZ-GitOps-Platform drawio" src="https://github.com/user-attachments/assets/a99fb6c5-9719-4f0a-ac3a-1c7fc07d1c53" />
+
 
 This repository demonstrates a **three-tier deployment model**:
 
@@ -191,7 +192,6 @@ The platform architecture supports managing multiple Kubernetes clusters:
 
 This repository serves as a reference implementation. For development guidance:
 
-- See `CLAUDE.md` for AI assistant development context
 - Review Terraform module structure in `Azure/terraform/modules/`
 - Helm chart organization in `K8s/lvl1-argoapp-helm-chart/charts/`
 
@@ -208,5 +208,6 @@ This repository serves as a reference implementation. For development guidance:
 
 **Status**: Archived/Reference Implementation
 **Last Updated**: November 2025
+
 
 
