@@ -1,6 +1,6 @@
-<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.1.2 Chrome/106.0.5249.199 Electron/21.4.3 Safari/537.36" modified="2025-11-18T13:34:49.555Z" version="21.1.2" etag="-1M5wOTD-2uI4Z7qyi6p" type="device" pages="4">
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.1.2 Chrome/106.0.5249.199 Electron/21.4.3 Safari/537.36" modified="2025-11-18T13:34:14.871Z" version="21.1.2" etag="-Mu8Mgidzlw3AKqh9vIn" type="device" pages="4">
   <diagram name="LZ-GitOps-Platform" id="YXyKd3V_KI4dJ7rxgOyY">
-    <mxGraphModel dx="7320" dy="5467" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" background="none" math="0" shadow="0">
+    <mxGraphModel dx="1292" dy="965" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" background="none" math="0" shadow="0">
       <root>
         <mxCell id="QHsNireUkC54QRGvDrw4-0" />
         <object label="Legend" id="0O8H8q1i3L-cdsu3RqvV-1">
@@ -219,7 +219,7 @@
         <mxCell id="QHsNireUkC54QRGvDrw4-47" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=26;labelPosition=left;verticalLabelPosition=middle;align=center;verticalAlign=bottom;horizontal=0;fontStyle=0;shadow=0;glass=0;fontFamily=Helvetica;opacity=50;" parent="QHsNireUkC54QRGvDrw4-1" vertex="1">
           <mxGeometry x="80" y="800" width="1280" height="1720" as="geometry" />
         </mxCell>
-        <mxCell id="QHsNireUkC54QRGvDrw4-48" value="Management subscription&lt;div&gt;sub-platform-p-management&lt;/div&gt;" style="image;aspect=fixed;html=1;points=[];align=left;fontSize=34;image=img/lib/azure2/general/Subscriptions.svg;fontStyle=1;labelPosition=right;verticalLabelPosition=middle;verticalAlign=middle;labelBackgroundColor=none;" parent="QHsNireUkC54QRGvDrw4-1" vertex="1">
+        <mxCell id="QHsNireUkC54QRGvDrw4-48" value="Management subscription&lt;div&gt;sub-bgr-p-management&lt;/div&gt;" style="image;aspect=fixed;html=1;points=[];align=left;fontSize=34;image=img/lib/azure2/general/Subscriptions.svg;fontStyle=1;labelPosition=right;verticalLabelPosition=middle;verticalAlign=middle;labelBackgroundColor=none;" parent="QHsNireUkC54QRGvDrw4-1" vertex="1">
           <mxGeometry x="120" y="840" width="44" height="71" as="geometry" />
         </mxCell>
         <mxCell id="QHsNireUkC54QRGvDrw4-49" value="Policy&lt;br&gt;Assignment" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=26;image=img/lib/azure2/management_governance/Policy.svg;labelBackgroundColor=none;" parent="QHsNireUkC54QRGvDrw4-1" vertex="1">
